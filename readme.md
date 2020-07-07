@@ -43,30 +43,27 @@ run ssh-keygen -t rsa and then register the key with the VM -
 Compute Engine -> Metadata, select SSH Keys, click Edit, click Add Item
 
 ### Install Superset
-
-sudo apt-get update 
-sudo apt-get install python3-pip libssl-dev libffi-dev libsasl2-dev libldap2-dev python3-venv
-pip3 install virtualenv 
-python3 -m venv virtual_env
-. ~/virtual_env/bin/activate
-pip3 install --upgrade setuptools pip
-
-vim ~/cdp_key.json
+    sudo apt-get update 
+    sudo apt-get install python3-pip libssl-dev libffi-dev libsasl2-dev libldap2-dev python3-venv 
+    pip3 install virtualenv  
+    python3 -m venv virtual_env 
+    . ~/virtual_env/bin/activate 
+    pip3 install --upgrade setuptools pip  
+    vim ~/cdp_key.json 
 Insert the JSON key that you created earlier
-echo 'export GOOGLE_APPLICATION_CREDENTIALS="$HOME/cdp_key.json"' >> ~/.bashrc
 
-pip3 install apache-superset
-superset db upgrade
-export FLASK_APP=superset
-flask fab create-admin
+    echo 'export GOOGLE_APPLICATION_CREDENTIALS="$HOME/cdp_key.json"' >> ~/.bashrc 
+    pip3 install apache-superset 
+    superset db upgrade  
+    export FLASK_APP=superset 
+    flask fab create-admin 
 Create an admin name and password (admin/admin is fine for testing)
 
-superset load_examples
-superset init
-pip3 install pybigquery
-
-superset run --port 8088 --host 0.0.0.0 --with-threads --reload --debugger
-
+    superset load_examples 
+    superset init 
+    pip3 install pybigquery 
+    superset run --port 8088 --host 0.0.0.0 --with-threads --reload --debugger 
 You should now be able to connect to the server from your desktop at the public IP address port 8088
 If you can't, try running a simple web server on port 80 and see if you can connect to that
-sudo python3 -m http.server 80
+
+    sudo python3 -m http.server 80

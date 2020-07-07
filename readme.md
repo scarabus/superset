@@ -32,17 +32,15 @@ Allow full access to all Cloud APIs
 Allow HTTP/HTTPS traffic
 If you chose *Specified target tags* for your Firewall rule then below Firewall select Networking and add the Network Tag that you created.
 
-Click create. This takes a couple of minutes, so while that's happening get the JSON service account key from
+Click create. This takes a couple of minutes, so while that's happening get the **JSON service account key** from
 https://console.cloud.google.com/apis/credentials/serviceaccountkey
 
-### Log on to the VM (verify this)
+### Log on to the VM
 You can SSH to the VM by clicking the button and a window will appear. 
 You can also ssh directly from a terminal if you use the External IP address.
-If you plan to do this it's a good idea to register your SSH public key with the server - 
-run ssh-keygen -t rsa and then register the key with the VM - 
-Compute Engine -> Metadata, select SSH Keys, click Edit, click Add Item
+If you plan to do this it's a good idea to register your SSH public key with the server. Go to Compute Engine -> Metadata and add the key/value pair **enable-guest-attributes:TRUE** then register the key with the VM - Compute Engine -> Metadata, select SSH Keys, click Edit, click Add Item, paste your key. You may need to modify the last field of the SSH key to match the login ID that Google expects. If you don't have a SSH public key already create one by running **ssh-keygen -t rsa**
 
-### Install Superset
+### Install Superset (correct as of version 0.36.0)
     sudo apt-get update 
     sudo apt-get install python3-pip libssl-dev libffi-dev libsasl2-dev libldap2-dev python3-venv 
     pip3 install virtualenv  
@@ -50,24 +48,22 @@ Compute Engine -> Metadata, select SSH Keys, click Edit, click Add Item
     . ~/virtual_env/bin/activate 
     pip3 install --upgrade setuptools pip  
 
-Put the JSON key that you created earlier into a file and set **GOOGLE_APPLICATION_CREDENTIALS** to point to that file on startup.
-
-    vim ~/cdp_key.json 
-    echo 'export GOOGLE_APPLICATION_CREDENTIALS="$HOME/cdp_key.json"' >> ~/.bashrc 
+Put the **JSON service account key** that you created earlier into a file and set **GOOGLE_APPLICATION_CREDENTIALS** to point to that file on startup.
+    vim ~/gac_key.json 
+    echo 'export GOOGLE_APPLICATION_CREDENTIALS="$HOME/gac_key.json"' >> ~/.bashrc 
+    
+Install superset, then create an admin name and password (admin/admin is fine for testing)
     pip3 install apache-superset 
     superset db upgrade  
     export FLASK_APP=superset 
     flask fab create-admin 
-
-Create an admin name and password (admin/admin is fine for testing)
-
     superset load_examples 
     superset init 
     pip3 install pybigquery 
     superset run --port 8088 --host 0.0.0.0 --with-threads --reload --debugger 
 
-You should now be able to connect to the server from your desktop at the public IP address port 8088
-If you can't, try running a simple web server on port 80 and see if you can connect to that -
-Try connecting from the VM and from your deskktiop using wget
+You should now be able to connect to the server from your desktop at the VM's public IP address, port **8088**
+If you can't, try connecting from both the VM and from your desktop using wget. 
+Then try running a simple web server on port 80 and see if you can connect to that
 
     sudo python3 -m http.server 80
